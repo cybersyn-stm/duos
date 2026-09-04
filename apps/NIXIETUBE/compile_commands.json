@@ -1,0 +1,23 @@
+[
+  {
+    "arguments": [
+      "/home/cybersyn/sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-mabi=lp64d",
+      "-march=rv64imafd",
+      "-fstack-protector-strong",
+      "-fPIE",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/sdk/duo-buildroot-sdk-v2/buildroot/output/milkv-duos-musl-riscv64-sd/host/riscv64-buildroot-linux-musl/sysroot",
+      "-c",
+      "-o",
+      "src/nixietube.o",
+      "src/nixietube.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/NIXIETUBE",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/NIXIETUBE/src/nixietube.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/NIXIETUBE/src/nixietube.o"
+  }
+]
