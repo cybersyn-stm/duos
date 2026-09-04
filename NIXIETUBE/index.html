@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Nixie Tube Clock</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <h1 class="brand">NIXIE TUBE CLOCK</h1>
+
+    <div class="clock" id="clock">
+      <span class="digit" id="h1">0</span><span class="digit" id="h2">0</span><span class="colon">:</span>
+      <span class="digit" id="m1">0</span><span class="digit" id="m2">0</span><span class="colon">:</span>
+      <span class="digit" id="s1">0</span><span class="digit" id="s2">0</span>
+    </div>
+
+    <div class="meta" id="meta">连接中…</div>
+
+    <button class="btn" id="syncBtn" type="button">立即校时</button>
+    <div class="hint">打开页面即自动用本机时间校准设备时钟</div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

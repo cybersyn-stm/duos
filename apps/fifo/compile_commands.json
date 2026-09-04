@@ -1,0 +1,19 @@
+[
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "ds3231.o",
+      "ds3231.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/ds3231",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/ds3231/ds3231.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/ds3231/ds3231.o"
+  }
+]

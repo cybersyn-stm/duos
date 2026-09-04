@@ -1,0 +1,1 @@
+cmd_/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/misc_demo/misc_demo.mod := { echo  /home/cybersyn/Learn_MilkV_DUOS/my-duos-project/misc_demo/misc_demo.o;  echo; } > /home/cybersyn/Learn_MilkV_DUOS/my-duos-project/misc_demo/misc_demo.mod

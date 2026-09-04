@@ -1,0 +1,172 @@
+[
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "src/password.o",
+      "src/password.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306/src/password.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306/src/password.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "src/menu.o",
+      "src/menu.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306/src/menu.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306/src/menu.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "src/input.o",
+      "src/input.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306/src/input.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306/src/input.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "src/ssd1306_misc_user.o",
+      "src/ssd1306_misc_user.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306/src/ssd1306_misc_user.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306/src/ssd1306_misc_user.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "src/main.o",
+      "src/main.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306/src/main.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306/src/main.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "src/ssd1306_8x16.o",
+      "src/ssd1306_8x16.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306/src/ssd1306_8x16.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306/src/ssd1306_8x16.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "src/ui.o",
+      "src/ui.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306/src/ui.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306/src/ui.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "src/device.o",
+      "src/device.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306/src/device.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306/src/device.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "src/fps.o",
+      "src/fps.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306/src/fps.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306/src/fps.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "src/kmod_utils.o",
+      "src/kmod_utils.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306/src/kmod_utils.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/usermode/copilot_ssd1306/src/kmod_utils.o"
+  }
+]

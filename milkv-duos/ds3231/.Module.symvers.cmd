@@ -1,0 +1,1 @@
+cmd_/home/cybersyn/duo/Learn_MilkV_DUOS/drivers/kernelmode/ds3231/Module.symvers := sed 's/ko$$/o/' /home/cybersyn/duo/Learn_MilkV_DUOS/drivers/kernelmode/ds3231/modules.order | scripts/mod/modpost     -o /home/cybersyn/duo/Learn_MilkV_DUOS/drivers/kernelmode/ds3231/Module.symvers -e -i Module.symvers   -T -

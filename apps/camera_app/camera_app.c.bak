@@ -1,0 +1,606 @@
+/**
+ * Milk-V Duo GC2083 摄像头控制程序
+ * 功能：初始化摄像头 → 固定帧率采集图像 → 预留 YOLOv5 推理接口
+ *
+ * 编译方式（在 Milk-V Duo Buildroot SDK 环境中）：
+ *   riscv64-unknown-linux-musl-gcc -o gc2083_capture gc2083_capture.c \
+ *       -I${SDK}/middleware/v2/include \
+ *       -L${SDK}/middleware/v2/lib -lisp -lae -lawb -laf -lvi -lvpss -lsys
+ *
+ * 运行：
+ *   ./gc2083_capture                  # 连续模式，打印每帧时间戳
+ *   ./gc2083_capture -o ./frames/      # 保存帧到目录
+ *   ./gc2083_capture -n 100            # 采集 100 帧后退出
+ *   ./gc2083_capture -f 15             # 以 15 fps 采集
+ */
+
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/time.h>
+#include <time.h>
+#include <unistd.h>
+
+/* CVITEK Middleware 头文件 */
+#include "cvi_ae.h"
+#include "cvi_awb.h"
+#include "cvi_comm_isp.h"
+#include "cvi_comm_vi.h"
+#include "cvi_comm_video.h"
+#include "cvi_comm_vpss.h"
+#include "cvi_isp.h"
+#include "cvi_sys.h"
+#include "cvi_vi.h"
+#include "cvi_vpss.h"
+
+/* ================================================================
+ * 配置参数 - 根据实际需求修改
+ * ================================================================ */
+#define VI_PIPE_NUM 0  // VI Pipe 编号（通常为 0）
+#define VI_CHN_NUM 0   // VI 通道编号
+#define VPSS_GRP_NUM 0 // VPSS 组编号
+#define VPSS_CHN_NUM 0 // VPSS 通道编号
+
+/* GC2083 默认参数 */
+#define SENSOR_WIDTH 1920
+#define SENSOR_HEIGHT 1080
+#define DEFAULT_FPS 30.0
+#define OUTPUT_WIDTH 640  // 送给模型的缩放尺寸（YOLOv5 通常用 640）
+#define OUTPUT_HEIGHT 480 // 可根据模型调整
+#define PIXEL_FORMAT PIXEL_FORMAT_YUV_PLANAR_420 // NV12
+
+/* ================================================================
+ * 帧缓冲结构（用于传给推理模块）
+ * ================================================================ */
+typedef struct {
+    CVI_U8 *pu8Data[3];   // Y, U, V 平面地址（NV12 时只用 [0]）
+    CVI_U32 u32Width;     // 图像宽度
+    CVI_U32 u32Height;    // 图像高度
+    CVI_U32 u32Stride[3]; // 每行步长
+    CVI_U64 u64PTS;       // 时间戳（微秒）
+    CVI_U32 u32Seq;       // 帧序号
+} FRAME_INFO_S;
+
+/* ================================================================
+ * 全局状态
+ * ================================================================ */
+static volatile int g_bRunning = 1;
+static CVI_U32 g_u32FrameCount = 0;
+static CVI_U32 g_u32MaxFrames = 0;    // 0 = 无限
+static char g_acOutputDir[256] = {0}; // 保存帧的目录
+static CVI_FLOAT g_fTargetFps = DEFAULT_FPS;
+
+/* ================================================================
+ * 信号处理 - 优雅退出
+ * ================================================================ */
+static void sig_handler(int signo) {
+    if (signo == SIGINT || signo == SIGTERM) {
+        printf("\n[INFO] 收到退出信号，正在停止...\n");
+        g_bRunning = 0;
+    }
+}
+
+/* ================================================================
+ * 保存 YUV 帧到文件（调试用，可替换为 BMP/JPEG 编码）
+ * ================================================================ */
+static CVI_S32 save_frame_to_file(FRAME_INFO_S *pstFrame, const char *dir) {
+    char filename[512];
+    snprintf(filename, sizeof(filename), "%s/frame_%06u_%llu.yuv", dir,
+             pstFrame->u32Seq, (unsigned long long)pstFrame->u64PTS);
+
+    FILE *fp = fopen(filename, "wb");
+    if (!fp) {
+        fprintf(stderr, "[ERROR] 无法创建文件: %s\n", filename);
+        return -1;
+    }
+
+    /* Y 平面 */
+    CVI_U32 y_size = pstFrame->u32Stride[0] * pstFrame->u32Height;
+    fwrite(pstFrame->pu8Data[0], 1, y_size, fp);
+
+    /* UV 平面 (NV12 交织) */
+    CVI_U32 uv_size = pstFrame->u32Stride[1] * (pstFrame->u32Height / 2);
+    fwrite(pstFrame->pu8Data[1], 1, uv_size, fp);
+
+    fclose(fp);
+    return 0;
+}
+
+/* ================================================================
+ * TODO: YOLOv5 推理接口（预留）
+ * 当准备好接入模型时，在此函数中实现：
+ *   1. NV12 → RGB/BGR 转换（或模型直接支持 NV12 输入）
+ *   2. 图像 resize/letterbox 到 640x640
+ *   3. 调用 YOLOv5 推理
+ *   4. 解析输出框 + NMS
+ * ================================================================ */
+static CVI_S32 model_inference(FRAME_INFO_S *pstFrame) {
+    /* ---- 预留：YOLOv5 推理 ---- */
+    /*
+     * // 1. NV12 → BGR (OpenCV)
+     * cv::Mat yuv(pstFrame->u32Height * 3/2, pstFrame->u32Width, CV_8UC1,
+     *             pstFrame->pu8Data[0]);
+     * cv::Mat bgr;
+     * cv::cvtColor(yuv, bgr, cv::COLOR_YUV2BGR_NV12);
+     *
+     * // 2. Letterbox resize → 640x640
+     * cv::Mat letterbox;
+     * // ... resize + pad ...
+     *
+     * // 3. YOLOv5 推理
+     * // float *output = yolov5_infer(letterbox.data);
+     *
+     * // 4. 解析检测结果
+     * // parse_yolov5_output(output, &detections);
+     */
+
+    /* 当前仅打印帧序号和时间戳，方便验证帧率 */
+    printf("[FRAME %06u] pts=%llu us | 等待接入 YOLOv5 推理\n",
+           pstFrame->u32Seq, (unsigned long long)pstFrame->u64PTS);
+
+    return 0;
+}
+
+/* ================================================================
+ * ISP 初始化 - 配置 GC2083 传感器参数
+ * ================================================================ */
+static CVI_S32 isp_init(VI_PIPE ViPipe) {
+    CVI_S32 s32Ret;
+    ISP_PUB_ATTR_S stPubAttr;
+    ISP_BIND_ATTR_S stBindAttr;
+    ISP_CTRL_PARAM_S stCtrlParam;
+    ISP_STATISTICS_CFG_S stStatCfg;
+
+    printf("[ISP] 初始化 ISP firmware...\n");
+
+    /* Step 1: 初始化 ISP 外部寄存器（仅双系统 Linux 侧不需要） */
+    s32Ret = CVI_ISP_MemInit(ViPipe);
+    if (s32Ret != CVI_SUCCESS) {
+        fprintf(stderr, "[ERROR] CVI_ISP_MemInit 失败: 0x%x\n", s32Ret);
+        return s32Ret;
+    }
+
+    /* Step 2: 初始化 ISP firmware */
+    s32Ret = CVI_ISP_Init(ViPipe);
+    if (s32Ret != CVI_SUCCESS) {
+        fprintf(stderr, "[ERROR] CVI_ISP_Init 失败: 0x%x\n", s32Ret);
+        return s32Ret;
+    }
+
+    /* Step 3: 设置 ISP 公共属性 */
+    memset(&stPubAttr, 0, sizeof(stPubAttr));
+    stPubAttr.stWndRect.s32X = 0;
+    stPubAttr.stWndRect.s32Y = 0;
+    stPubAttr.stWndRect.u32Width = SENSOR_WIDTH;
+    stPubAttr.stWndRect.u32Height = SENSOR_HEIGHT;
+    stPubAttr.stSnsSize.u32Width = SENSOR_WIDTH;
+    stPubAttr.stSnsSize.u32Height = SENSOR_HEIGHT;
+    stPubAttr.f32FrameRate = g_fTargetFps;
+    stPubAttr.enBayer = BAYER_RGGB;      // GC2083 使用 RGGB Bayer
+    stPubAttr.enWDRMode = WDR_MODE_NONE; // 线性模式
+    stPubAttr.u8SnsMode = 0;
+
+    s32Ret = CVI_ISP_SetPubAttr(ViPipe, &stPubAttr);
+    if (s32Ret != CVI_SUCCESS) {
+        fprintf(stderr, "[ERROR] CVI_ISP_SetPubAttr 失败: 0x%x\n", s32Ret);
+        return s32Ret;
+    }
+
+    /* Step 4: 绑定 sensor + 3A 算法库 */
+    memset(&stBindAttr, 0, sizeof(stBindAttr));
+    stBindAttr.sensorId = 0; // GC2083 sensor ID
+    stBindAttr.stAeLib.s32Id = 0;
+    strcpy(stBindAttr.stAeLib.acLibName, "ae");
+    stBindAttr.stAwbLib.s32Id = 0;
+    strcpy(stBindAttr.stAwbLib.acLibName, "awb");
+    stBindAttr.stAfLib.s32Id = 0;
+    strcpy(stBindAttr.stAfLib.acLibName, "af");
+
+    s32Ret = CVI_ISP_SetBindAttr(ViPipe, &stBindAttr);
+    if (s32Ret != CVI_SUCCESS) {
+        fprintf(stderr, "[ERROR] CVI_ISP_SetBindAttr 失败: 0x%x\n", s32Ret);
+        /* 绑定失败不一定是致命错误，但 AE/AWB 可能不工作 */
+    }
+
+    /* Step 5: 设置 ISP 控制参数（统计信息更新频率） */
+    memset(&stCtrlParam, 0, sizeof(stCtrlParam));
+    stCtrlParam.u32AEStatIntvl = 1;  // 每帧更新 AE 统计
+    stCtrlParam.u32AWBStatIntvl = 1; // 每帧更新 AWB 统计
+    stCtrlParam.u32AFStatIntvl = 1;  // 每帧更新 AF 统计
+    stCtrlParam.u32ProcParam = 30;   // ISP 信息收集频率
+    stCtrlParam.u32ProcLevel = 0;    // 关闭 proc 打印
+    stCtrlParam.u32UpdatePos = 0;
+    CVI_ISP_SetCtrlParam(ViPipe, &stCtrlParam);
+
+    /* Step 6: 配置统计信息（AE / AWB / AF 窗口） */
+    memset(&stStatCfg, 0, sizeof(stStatCfg));
+    stStatCfg.unKey.bit1FEAeGloStat = 1; // 使能 AE 全局统计
+    stStatCfg.unKey.bit1FEAeLocStat = 1; // 使能 AE 分块统计
+    stStatCfg.unKey.bit1AwbStat1 = 1;    // 使能 AWB 统计
+    stStatCfg.unKey.bit1AwbStat2 = 1;
+    stStatCfg.unKey.bit1FEAfStat = 1; // 使能 AF 统计
+
+    /* AE 窗口裁剪 */
+    stStatCfg.stAECfg.stCrop[0].bEnable = 1;
+    stStatCfg.stAECfg.stCrop[0].u16X = 0;
+    stStatCfg.stAECfg.stCrop[0].u16Y = 0;
+    stStatCfg.stAECfg.stCrop[0].u16W = SENSOR_WIDTH;
+    stStatCfg.stAECfg.stCrop[0].u16H = SENSOR_HEIGHT;
+
+    /* AWB 窗口裁剪 */
+    stStatCfg.stWBCfg.u16ZoneRow = 15;
+    stStatCfg.stWBCfg.u16ZoneCol = 17;
+    stStatCfg.stWBCfg.stCrop.u16X = 0;
+    stStatCfg.stWBCfg.stCrop.u16Y = 0;
+    stStatCfg.stWBCfg.stCrop.u16W = SENSOR_WIDTH;
+    stStatCfg.stWBCfg.stCrop.u16H = SENSOR_HEIGHT;
+    stStatCfg.stWBCfg.u16BlackLevel = 0;
+    stStatCfg.stWBCfg.u16WhiteLevel = 4095;
+
+    /* AF 窗口配置 */
+    stStatCfg.stFocusCfg.stConfig.bEnable = 1;
+    stStatCfg.stFocusCfg.stConfig.stCrop.bEnable = 1;
+    stStatCfg.stFocusCfg.stConfig.stCrop.u16X = 0;
+    stStatCfg.stFocusCfg.stConfig.stCrop.u16Y = 0;
+    stStatCfg.stFocusCfg.stConfig.stCrop.u16W = SENSOR_WIDTH;
+    stStatCfg.stFocusCfg.stConfig.stCrop.u16H = SENSOR_HEIGHT;
+    stStatCfg.stFocusCfg.stConfig.u16Hwnd = 17;
+    stStatCfg.stFocusCfg.stConfig.u16Vwnd = 15;
+
+    CVI_ISP_SetStatisticsConfig(ViPipe, &stStatCfg);
+
+    /* Step 7: 启动 ISP firmware */
+    s32Ret = CVI_ISP_Run(ViPipe);
+    if (s32Ret != CVI_SUCCESS) {
+        fprintf(stderr, "[ERROR] CVI_ISP_Run 失败: 0x%x\n", s32Ret);
+        return s32Ret;
+    }
+
+    printf("[ISP] ISP 初始化完成！\n");
+    return CVI_SUCCESS;
+}
+
+/* ================================================================
+ * VI (Video Input) 初始化
+ * ================================================================ */
+static CVI_S32 vi_init(VI_PIPE ViPipe, VI_CHN ViChn) {
+    CVI_S32 s32Ret;
+    VI_CHN_ATTR_S stChnAttr;
+
+    printf("[VI] 初始化 VI 通道...\n");
+
+    memset(&stChnAttr, 0, sizeof(stChnAttr));
+    stChnAttr.stSize.u32Width = SENSOR_WIDTH;
+    stChnAttr.stSize.u32Height = SENSOR_HEIGHT;
+    stChnAttr.enPixelFormat = PIXEL_FORMAT;
+    stChnAttr.enDynamicRange = DYNAMIC_RANGE_SDR8;
+    stChnAttr.enVideoFormat = VIDEO_FORMAT_LINEAR;
+    stChnAttr.enCompressMode = COMPRESS_MODE_NONE;
+
+    s32Ret = CVI_VI_SetChnAttr(ViPipe, ViChn, &stChnAttr);
+    if (s32Ret != CVI_SUCCESS) {
+        fprintf(stderr, "[ERROR] CVI_VI_SetChnAttr 失败: 0x%x\n", s32Ret);
+        return s32Ret;
+    }
+
+    s32Ret = CVI_VI_EnableChn(ViPipe, ViChn);
+    if (s32Ret != CVI_SUCCESS) {
+        fprintf(stderr, "[ERROR] CVI_VI_EnableChn 失败: 0x%x\n", s32Ret);
+        return s32Ret;
+    }
+
+    s32Ret = CVI_VI_StartChn(ViPipe, ViChn);
+    if (s32Ret != CVI_SUCCESS) {
+        fprintf(stderr, "[ERROR] CVI_VI_StartChn 失败: 0x%x\n", s32Ret);
+        return s32Ret;
+    }
+
+    printf("[VI] VI 初始化完成！\n");
+    return CVI_SUCCESS;
+}
+
+/* ================================================================
+ * VPSS (Video Processing Subsystem) 初始化 - 缩放/格式转换
+ * ================================================================ */
+static CVI_S32 vpss_init(VPSS_GRP VpssGrp, VPSS_CHN VpssChn) {
+    CVI_S32 s32Ret;
+    VPSS_GRP_ATTR_S stGrpAttr;
+    VPSS_CHN_ATTR_S stChnAttr;
+
+    printf("[VPSS] 初始化 VPSS...\n");
+
+    /* 创建 VPSS 组 */
+    memset(&stGrpAttr, 0, sizeof(stGrpAttr));
+    stGrpAttr.u32MaxW = SENSOR_WIDTH;
+    stGrpAttr.u32MaxH = SENSOR_HEIGHT;
+    stGrpAttr.enPixelFormat = PIXEL_FORMAT;
+    stGrpAttr.stFrameRate.s32SrcFrameRate = -1;
+    stGrpAttr.stFrameRate.s32DstFrameRate = -1;
+
+    s32Ret = CVI_VPSS_CreateGrp(VpssGrp, &stGrpAttr);
+    if (s32Ret != CVI_SUCCESS) {
+        fprintf(stderr, "[ERROR] CVI_VPSS_CreateGrp 失败: 0x%x\n", s32Ret);
+        return s32Ret;
+    }
+
+    /* 设置 VPSS 通道属性 - 缩放到模型需要的尺寸 */
+    memset(&stChnAttr, 0, sizeof(stChnAttr));
+    stChnAttr.u32Width = OUTPUT_WIDTH;
+    stChnAttr.u32Height = OUTPUT_HEIGHT;
+    stChnAttr.enVideoFormat = VIDEO_FORMAT_LINEAR;
+    stChnAttr.enPixelFormat = PIXEL_FORMAT;
+    stChnAttr.stFrameRate.s32SrcFrameRate = -1;
+    stChnAttr.stFrameRate.s32DstFrameRate = -1;
+
+    s32Ret = CVI_VPSS_SetChnAttr(VpssGrp, VpssChn, &stChnAttr);
+    if (s32Ret != CVI_SUCCESS) {
+        fprintf(stderr, "[ERROR] CVI_VPSS_SetChnAttr 失败: 0x%x\n", s32Ret);
+        return s32Ret;
+    }
+
+    s32Ret = CVI_VPSS_EnableChn(VpssGrp, VpssChn);
+    if (s32Ret != CVI_SUCCESS) {
+        fprintf(stderr, "[ERROR] CVI_VPSS_EnableChn 失败: 0x%x\n", s32Ret);
+        return s32Ret;
+    }
+
+    s32Ret = CVI_VPSS_StartGrp(VpssGrp);
+    if (s32Ret != CVI_SUCCESS) {
+        fprintf(stderr, "[ERROR] CVI_VPSS_StartGrp 失败: 0x%x\n", s32Ret);
+        return s32Ret;
+    }
+
+    printf("[VPSS] VPSS 初始化完成！(缩放至 %dx%d)\n", OUTPUT_WIDTH,
+           OUTPUT_HEIGHT);
+    return CVI_SUCCESS;
+}
+
+/* ================================================================
+ * 绑定 VI → VPSS 数据通路
+ * ================================================================ */
+static CVI_S32 bind_vi_to_vpss(VI_PIPE ViPipe, VI_CHN ViChn, VPSS_GRP VpssGrp,
+                               VPSS_CHN VpssChn) {
+    MMF_CHN_S stSrcChn;
+    MMF_CHN_S stDestChn;
+
+    stSrcChn.enModId = CVI_MOD_ID_VI;
+    stSrcChn.s32DevId = ViPipe;
+    stSrcChn.s32ChnId = ViChn;
+
+    stDestChn.enModId = CVI_MOD_ID_VPSS;
+    stDestChn.s32DevId = VpssGrp;
+    stDestChn.s32ChnId = VpssChn;
+
+    printf("[BIND] 绑定 VI(Pipe%d/Chn%d) → VPSS(Grp%d/Chn%d)...\n", ViPipe,
+           ViChn, VpssGrp, VpssChn);
+
+    return CVI_SYS_Bind(&stSrcChn, &stDestChn);
+}
+
+/* ================================================================
+ * 帧采集主循环
+ * ================================================================ */
+static CVI_S32 capture_loop(VPSS_GRP VpssGrp, VPSS_CHN VpssChn) {
+    CVI_S32 s32Ret;
+    VIDEO_FRAME_INFO_S stVideoFrame;
+    FRAME_INFO_S stFrame;
+    CVI_S32 s32Timeout = 1000; // 超时 1000ms
+    clock_t start_time, end_time;
+    double elapsed;
+
+    printf("\n[CAPTURE] 开始采集帧... (Ctrl+C 停止)\n");
+    printf("[CAPTURE] 输出分辨率: %dx%d | 目标帧率: %.1f fps\n", OUTPUT_WIDTH,
+           OUTPUT_HEIGHT, (double)g_fTargetFps);
+    printf("[CAPTURE] YOLOv5 推理接口已预留。\n");
+    printf("===========================================\n\n");
+
+    while (g_bRunning) {
+        /* 检查最大帧数限制 */
+        if (g_u32MaxFrames > 0 && g_u32FrameCount >= g_u32MaxFrames) {
+            printf("[CAPTURE] 已达到指定帧数 %u，退出。\n", g_u32MaxFrames);
+            break;
+        }
+
+        start_time = clock();
+
+        /* 从 VPSS 获取一帧 */
+        memset(&stVideoFrame, 0, sizeof(stVideoFrame));
+        s32Ret =
+            CVI_VPSS_GetChnFrame(VpssGrp, VpssChn, &stVideoFrame, s32Timeout);
+        if (s32Ret != CVI_SUCCESS) {
+            if (s32Ret == CVI_ERR_VPSS_TIMEOUT) {
+                continue; // 超时，重试
+            }
+            fprintf(stderr, "[ERROR] CVI_VPSS_GetChnFrame 失败: 0x%x\n",
+                    s32Ret);
+            break;
+        }
+
+        /* 提取帧信息 */
+        stFrame.pu8Data[0] = (CVI_U8 *)stVideoFrame.stVFrame.pu8VirAddr[0];
+        stFrame.pu8Data[1] = (CVI_U8 *)stVideoFrame.stVFrame.pu8VirAddr[1];
+        stFrame.pu8Data[2] = (CVI_U8 *)stVideoFrame.stVFrame.pu8VirAddr[2];
+        stFrame.u32Width = stVideoFrame.stVFrame.u32Width;
+        stFrame.u32Height = stVideoFrame.stVFrame.u32Height;
+        stFrame.u32Stride[0] = stVideoFrame.stVFrame.u32Stride[0];
+        stFrame.u32Stride[1] = stVideoFrame.stVFrame.u32Stride[1];
+        stFrame.u32Stride[2] = stVideoFrame.stVFrame.u32Stride[2];
+        stFrame.u64PTS = stVideoFrame.stVFrame.u64PTS;
+        stFrame.u32Seq = g_u32FrameCount;
+
+        /* ---- 处理帧 ---- */
+
+        /* 1. 保存到文件（如果指定了输出目录） */
+        if (g_acOutputDir[0] != '\0') {
+            save_frame_to_file(&stFrame, g_acOutputDir);
+        }
+
+        /* 2. 调用模型推理（当前为预留桩函数） */
+        model_inference(&stFrame);
+
+        /* 释放帧 */
+        CVI_VPSS_ReleaseChnFrame(VpssGrp, VpssChn, &stVideoFrame);
+
+        g_u32FrameCount++;
+
+        /* 计算实际耗时 */
+        end_time = clock();
+        elapsed = ((double)(end_time - start_time)) / CLOCKS_PER_SEC * 1000.0;
+
+        /* 每 30 帧打印一次速率统计 */
+        if (g_u32FrameCount % 30 == 0) {
+            CVI_FLOAT fActualFps;
+            CVI_ISP_QueryFps(VI_PIPE_NUM, &fActualFps);
+            printf("[STATS] 已采集 %u 帧 | 处理耗时 %.1f ms | ISP 实际 fps: "
+                   "%.1f\n",
+                   g_u32FrameCount, elapsed, (double)fActualFps);
+        }
+    }
+
+    printf("\n[CAPTURE] 采集结束，共 %u 帧。\n", g_u32FrameCount);
+    return CVI_SUCCESS;
+}
+
+/* ================================================================
+ * 清理资源
+ * ================================================================ */
+static void cleanup(void) {
+    MMF_CHN_S stSrcChn;
+    MMF_CHN_S stDestChn;
+
+    printf("[CLEANUP] 释放资源...\n");
+
+    /* 解绑 */
+    stSrcChn.enModId = CVI_MOD_ID_VI;
+    stSrcChn.s32DevId = VI_PIPE_NUM;
+    stSrcChn.s32ChnId = VI_CHN_NUM;
+    stDestChn.enModId = CVI_MOD_ID_VPSS;
+    stDestChn.s32DevId = VPSS_GRP_NUM;
+    stDestChn.s32ChnId = VPSS_CHN_NUM;
+    CVI_SYS_UnBind(&stSrcChn, &stDestChn);
+
+    /* 停止并销毁 VPSS */
+    CVI_VPSS_StopGrp(VPSS_GRP_NUM);
+    CVI_VPSS_DisableChn(VPSS_GRP_NUM, VPSS_CHN_NUM);
+    CVI_VPSS_DestroyGrp(VPSS_GRP_NUM);
+
+    /* 停止并关闭 VI */
+    CVI_VI_StopChn(VI_PIPE_NUM, VI_CHN_NUM);
+    CVI_VI_DisableChn(VI_PIPE_NUM, VI_CHN_NUM);
+
+    /* 退出 ISP */
+    CVI_ISP_Exit(VI_PIPE_NUM);
+
+    /* 退出系统 */
+    CVI_SYS_Exit();
+
+    printf("[CLEANUP] 完成。\n");
+}
+
+/* ================================================================
+ * 打印用法
+ * ================================================================ */
+static void print_usage(const char *prog) {
+    printf("用法: %s [选项]\n\n", prog);
+    printf("选项:\n");
+    printf("  -o <dir>     保存帧到指定目录（YUV 格式）\n");
+    printf("  -n <num>     采集指定帧数后退出（默认：无限）\n");
+    printf("  -f <fps>     设置目标帧率（默认：%.1f）\n", (double)DEFAULT_FPS);
+    printf("  -h           显示帮助\n\n");
+    printf("示例:\n");
+    printf("  %s                          连续采集，打印帧信息\n", prog);
+    printf("  %s -o ./frames/ -n 100       保存 100 帧到 ./frames/\n", prog);
+    printf("  %s -f 15                     以 15 fps 采集\n", prog);
+}
+
+/* ================================================================
+ * 主函数
+ * ================================================================ */
+int main(int argc, char *argv[]) {
+    CVI_S32 s32Ret;
+    int opt;
+
+    /* 解析命令行参数 */
+    while ((opt = getopt(argc, argv, "o:n:f:h")) != -1) {
+        switch (opt) {
+        case 'o':
+            strncpy(g_acOutputDir, optarg, sizeof(g_acOutputDir) - 1);
+            break;
+        case 'n':
+            g_u32MaxFrames = (CVI_U32)atoi(optarg);
+            break;
+        case 'f':
+            g_fTargetFps = (CVI_FLOAT)atof(optarg);
+            if (g_fTargetFps <= 0) {
+                fprintf(stderr, "[ERROR] 帧率必须 > 0\n");
+                return -1;
+            }
+            break;
+        case 'h':
+        default:
+            print_usage(argv[0]);
+            return 0;
+        }
+    }
+
+    /* 注册信号处理 */
+    signal(SIGINT, sig_handler);
+    signal(SIGTERM, sig_handler);
+
+    printf("============================================\n");
+    printf("  Milk-V Duo GC2083 摄像头控制程序\n");
+    printf("  Sensor: GC2083 %dx%d @ %.1f fps\n", SENSOR_WIDTH, SENSOR_HEIGHT,
+           (double)g_fTargetFps);
+    printf("  输出: %dx%d %s\n", OUTPUT_WIDTH, OUTPUT_HEIGHT,
+           (g_acOutputDir[0] ? g_acOutputDir : "仅打印"));
+    printf("============================================\n\n");
+
+    /* ---- 初始化系统 ---- */
+    s32Ret = CVI_SYS_Init();
+    if (s32Ret != CVI_SUCCESS) {
+        fprintf(stderr, "[ERROR] CVI_SYS_Init 失败: 0x%x\n", s32Ret);
+        return -1;
+    }
+
+    /* ---- 初始化 ISP + Sensor ---- */
+    s32Ret = isp_init(VI_PIPE_NUM);
+    if (s32Ret != CVI_SUCCESS) {
+        fprintf(stderr, "[ERROR] ISP 初始化失败\n");
+        CVI_SYS_Exit();
+        return -1;
+    }
+
+    /* ---- 初始化 VI ---- */
+    s32Ret = vi_init(VI_PIPE_NUM, VI_CHN_NUM);
+    if (s32Ret != CVI_SUCCESS) {
+        fprintf(stderr, "[ERROR] VI 初始化失败\n");
+        cleanup();
+        return -1;
+    }
+
+    /* ---- 初始化 VPSS ---- */
+    s32Ret = vpss_init(VPSS_GRP_NUM, VPSS_CHN_NUM);
+    if (s32Ret != CVI_SUCCESS) {
+        fprintf(stderr, "[ERROR] VPSS 初始化失败\n");
+        cleanup();
+        return -1;
+    }
+
+    /* ---- 绑定 VI → VPSS ---- */
+    s32Ret =
+        bind_vi_to_vpss(VI_PIPE_NUM, VI_CHN_NUM, VPSS_GRP_NUM, VPSS_CHN_NUM);
+    if (s32Ret != CVI_SUCCESS) {
+        fprintf(stderr, "[ERROR] 绑定失败: 0x%x\n", s32Ret);
+        cleanup();
+        return -1;
+    }
+
+    /* ---- 主采集循环 ---- */
+    capture_loop(VPSS_GRP_NUM, VPSS_CHN_NUM);
+
+    /* ---- 清理 ---- */
+    cleanup();
+
+    return 0;
+}

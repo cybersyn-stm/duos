@@ -1,0 +1,1 @@
+cmd_/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/kernelmode/vk36n16i/Module.symvers := sed 's/ko$$/o/' /home/cybersyn/Learn_MilkV_DUOS/my-duos-project/kernelmode/vk36n16i/modules.order | scripts/mod/modpost     -o /home/cybersyn/Learn_MilkV_DUOS/my-duos-project/kernelmode/vk36n16i/Module.symvers -e -i Module.symvers   -T -

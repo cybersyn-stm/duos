@@ -1,0 +1,1 @@
+cmd_/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/hello/helloworld.mod := { echo  /home/cybersyn/Learn_MilkV_DUOS/my-duos-project/hello/helloworld.o;  echo; } > /home/cybersyn/Learn_MilkV_DUOS/my-duos-project/hello/helloworld.mod

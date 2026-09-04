@@ -1,0 +1,121 @@
+[
+  {
+    "arguments": [
+      "/home/cybersyn/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "obj/input.o",
+      "src/input.c"
+    ],
+    "directory": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306",
+    "file": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306/src/input.c",
+    "output": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306/obj/input.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "obj/linklisted.o",
+      "src/linklisted.c"
+    ],
+    "directory": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306",
+    "file": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306/src/linklisted.c",
+    "output": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306/obj/linklisted.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "obj/menu.o",
+      "src/menu.c"
+    ],
+    "directory": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306",
+    "file": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306/src/menu.c",
+    "output": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306/obj/menu.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "obj/output.o",
+      "src/output.c"
+    ],
+    "directory": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306",
+    "file": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306/src/output.c",
+    "output": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306/obj/output.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "obj/ssd1306_8x16.o",
+      "src/ssd1306_8x16.c"
+    ],
+    "directory": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306",
+    "file": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306/src/ssd1306_8x16.c",
+    "output": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306/obj/ssd1306_8x16.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "obj/ssd1306_misc_user.o",
+      "src/ssd1306_misc_user.c"
+    ],
+    "directory": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306",
+    "file": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306/src/ssd1306_misc_user.c",
+    "output": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306/obj/ssd1306_misc_user.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "obj/ui.o",
+      "src/ui.c"
+    ],
+    "directory": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306",
+    "file": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306/src/ui.c",
+    "output": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/ssd1306/rebuild_ssd1306/obj/ui.o"
+  }
+]

@@ -1,0 +1,2 @@
+/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/misc_demo/misc_demo.o
+

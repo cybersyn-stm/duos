@@ -1,0 +1,94 @@
+[
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I/home/cybersyn/sdk/duo-buildroot-sdk-v2/cvi_mpi/include",
+      "-I/home/cybersyn/sdk/duo-buildroot-sdk-v2/cvi_mpi/include/isp/cv181x/",
+      "-I/home/cybersyn/sdk/duo-buildroot-sdk-v2/cvi_mpi/include/linux/",
+      "-I/home/cybersyn/sdk/duo-buildroot-sdk-v2/cvi_rtsp/include",
+      "-Iinclude",
+      "-D__CV181X__",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Wno-sign-compare",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "camera_init.o",
+      "camera_init.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/camera_app",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/camera_app/camera_init.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/camera_app/camera_init.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I/home/cybersyn/sdk/duo-buildroot-sdk-v2/cvi_mpi/include",
+      "-I/home/cybersyn/sdk/duo-buildroot-sdk-v2/cvi_mpi/include/isp/cv181x/",
+      "-I/home/cybersyn/sdk/duo-buildroot-sdk-v2/cvi_mpi/include/linux/",
+      "-I/home/cybersyn/sdk/duo-buildroot-sdk-v2/cvi_rtsp/include",
+      "-Iinclude",
+      "-D__CV181X__",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Wno-sign-compare",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "src/step7_vpss.o",
+      "src/step7_vpss.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/camera_app",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/camera_app/src/step7_vpss.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/camera_app/src/step7_vpss.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I/home/cybersyn/sdk/duo-buildroot-sdk-v2/cvi_mpi/include",
+      "-I/home/cybersyn/sdk/duo-buildroot-sdk-v2/cvi_mpi/include/isp/cv181x/",
+      "-I/home/cybersyn/sdk/duo-buildroot-sdk-v2/cvi_mpi/include/linux/",
+      "-I/home/cybersyn/sdk/duo-buildroot-sdk-v2/cvi_rtsp/include",
+      "-Iinclude",
+      "-D__CV181X__",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Wno-sign-compare",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "src/step10_venc.o",
+      "src/step10_venc.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/camera_app",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/camera_app/src/step10_venc.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/camera_app/src/step10_venc.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I/home/cybersyn/sdk/duo-buildroot-sdk-v2/cvi_mpi/include",
+      "-I/home/cybersyn/sdk/duo-buildroot-sdk-v2/cvi_mpi/include/isp/cv181x/",
+      "-I/home/cybersyn/sdk/duo-buildroot-sdk-v2/cvi_mpi/include/linux/",
+      "-I/home/cybersyn/sdk/duo-buildroot-sdk-v2/cvi_rtsp/include",
+      "-Iinclude",
+      "-D__CV181X__",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Wno-sign-compare",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "src/step11_rtsp.o",
+      "src/step11_rtsp.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/camera_app",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/camera_app/src/step11_rtsp.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/camera_app/src/step11_rtsp.o"
+  }
+]

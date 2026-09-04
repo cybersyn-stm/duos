@@ -1,0 +1,32 @@
+#!/bin/sh
+# Clock Web App 自启动脚本
+# 命名 S99y*：排在 S99user / S99xhostapd 之后启动
+
+PIDFILE=/var/run/webapp.pid
+
+case "$1" in
+start)
+    [ -x /usr/local/bin/webapp.py ] || exit 0
+    # 已在运行则跳过
+    [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null && exit 0
+
+    python3 /usr/local/bin/webapp.py --port 80 --www /www >> /tmp/webapp.log 2>&1 &
+    echo $! > "$PIDFILE"
+    ;;
+stop)
+    if [ -f "$PIDFILE" ]; then
+        kill "$(cat "$PIDFILE")" 2>/dev/null
+        rm -f "$PIDFILE"
+    fi
+    ;;
+restart)
+    "$0" stop
+    "$0" start
+    ;;
+*)
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+    ;;
+esac
+
+exit 0

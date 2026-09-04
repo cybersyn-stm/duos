@@ -1,0 +1,2 @@
+/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/hello_2/helloworld_1.o
+

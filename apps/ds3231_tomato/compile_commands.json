@@ -1,0 +1,53 @@
+[
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "src/ds3231_init.o",
+      "src/ds3231_init.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/usermode/ds3231_tomato",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/usermode/ds3231_tomato/src/ds3231_init.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/usermode/ds3231_tomato/src/ds3231_init.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "src/ssd1306_8x16.o",
+      "src/ssd1306_8x16.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/usermode/ds3231_tomato",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/usermode/ds3231_tomato/src/ssd1306_8x16.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/usermode/ds3231_tomato/src/ssd1306_8x16.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "src/pomodoro.o",
+      "src/pomodoro.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/usermode/ds3231_tomato",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/usermode/ds3231_tomato/src/pomodoro.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/usermode/ds3231_tomato/src/pomodoro.o"
+  }
+]

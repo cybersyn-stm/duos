@@ -1,0 +1,19 @@
+[
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "src/dobot_api.o",
+      "src/dobot_api.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/TCP-IP-Python-V4/mycproject",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/TCP-IP-Python-V4/mycproject/src/dobot_api.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/TCP-IP-Python-V4/mycproject/src/dobot_api.o"
+  }
+]

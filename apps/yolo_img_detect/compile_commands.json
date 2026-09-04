@@ -1,0 +1,48 @@
+[
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/cvi_mpi/include",
+      "-I/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/cvi_mpi/include/isp/cv181x/",
+      "-I/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/cvi_mpi/include/linux/",
+      "-I/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/tdl_sdk/include",
+      "-Iinclude",
+      "-D__CV181X__",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Wno-sign-compare",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "img_detect_6cls.o",
+      "src/img_detect_6cls.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/yolo_img_detect",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/yolo_img_detect/src/img_detect_6cls.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/yolo_img_detect/img_detect_6cls.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/cvi_mpi/include",
+      "-I/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/cvi_mpi/include/isp/cv181x/",
+      "-I/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/cvi_mpi/include/linux/",
+      "-I/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/tdl_sdk/include",
+      "-Iinclude",
+      "-D__CV181X__",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Wno-sign-compare",
+      "--sysroot=/home/cybersyn/source_sdk/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "step1_vb.o",
+      "src/step1_vb.c"
+    ],
+    "directory": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/yolo_img_detect",
+    "file": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/yolo_img_detect/src/step1_vb.c",
+    "output": "/home/cybersyn/duo/Learn_MilkV_DUOS/apps/yolo_img_detect/step1_vb.o"
+  }
+]

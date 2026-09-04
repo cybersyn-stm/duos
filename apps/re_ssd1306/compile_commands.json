@@ -1,0 +1,53 @@
+[
+  {
+    "arguments": [
+      "/home/cybersyn/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "src/ssd1306_misc_user.o",
+      "src/ssd1306_misc_user.c"
+    ],
+    "directory": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/re_ssd1306",
+    "file": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/re_ssd1306/src/ssd1306_misc_user.c",
+    "output": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/re_ssd1306/src/ssd1306_misc_user.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "src/ssd1306_8x16.o",
+      "src/ssd1306_8x16.c"
+    ],
+    "directory": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/re_ssd1306",
+    "file": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/re_ssd1306/src/ssd1306_8x16.c",
+    "output": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/re_ssd1306/src/ssd1306_8x16.o"
+  },
+  {
+    "arguments": [
+      "/home/cybersyn/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-gcc",
+      "-I./include/",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "--sysroot=/home/cybersyn/duo-buildroot-sdk-v2/host-tools/gcc/riscv64-linux-musl-x86_64/sysroot",
+      "-c",
+      "-o",
+      "src/menu.o",
+      "src/menu.c"
+    ],
+    "directory": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/re_ssd1306",
+    "file": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/re_ssd1306/src/menu.c",
+    "output": "/home/cybersyn/Learn_MilkV_DUOS/my-duos-project/usermode/re_ssd1306/src/menu.o"
+  }
+]
