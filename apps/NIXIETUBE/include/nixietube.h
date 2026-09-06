@@ -1,7 +1,7 @@
 #ifndef NIXIE_TUBE
 #define NIXIE_TUBE
 
-#define CHIP "/dev/	gpiochip0"
+#define CHIP "/dev/gpiochip0"
 #define SER 21
 #define RCLK 20
 #define SRCLK 19
