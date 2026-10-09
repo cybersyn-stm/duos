@@ -5,6 +5,13 @@
 #include <poll.h>
 #include <stdio.h>
 #include <unistd.h>
+
+unsigned char number[10] = {0x09, 0x02, 0x03, 0x07, 0x06,
+                            0x04, 0x05, 0x01, 0x00, 0x08};
+
+struct gpiod_chip *chip;
+struct gpiod_line *ser, *rclk, *srclk, *srclk_clean;
+
 int ds3231_init(int fd) {
     struct timespec ts;
     struct tm t;
@@ -80,6 +87,7 @@ int close_device(int fd) {
 int gpio_init(void) {
     chip = gpiod_chip_open(CHIP);
     if (!chip) {
+        perror("gpiod_chip_open");
         return -1;
     }
 
@@ -87,12 +95,31 @@ int gpio_init(void) {
     rclk = gpiod_chip_get_line(chip, RCLK);
     srclk = gpiod_chip_get_line(chip, SRCLK);
     srclk_clean = gpiod_chip_get_line(chip, SRCLK_CLEAN);
+    if (!ser || !rclk || !srclk || !srclk_clean) {
+        printf("gpiod_chip_get_line failed (bad pin number?)\n");
+        return -1;
+    }
 
-    gpiod_line_request_output(ser, "74hc595", 0);
-    gpiod_line_request_output(rclk, "74hc595", 0);
-    gpiod_line_request_output(srclk, "74hc595", 0);
-    gpiod_line_request_output(srclk_clean, "74hc595", 0);
+    if (gpiod_line_request_output(ser, "74hc595", 0) < 0) {
+        perror("request SER");
+        return -1;
+    }
+    if (gpiod_line_request_output(rclk, "74hc595", 0) < 0) {
+        perror("request RCLK");
+        return -1;
+    }
+    if (gpiod_line_request_output(srclk, "74hc595", 0) < 0) {
+        perror("request SRCLK");
+        return -1;
+    }
+    /* /SRCLR 低电平有效复位，初始化必须为 1（不复位） */
+    if (gpiod_line_request_output(srclk_clean, "74hc595", 1) < 0) {
+        perror("request SRCLK_CLEAN");
+        return -1;
+    }
 
+    printf("GPIO init OK: SER=%d RCLK=%d SRCLK=%d SRCLR=%d\n", SER, RCLK, SRCLK,
+           SRCLK_CLEAN);
     return 0;
 }
 
@@ -113,6 +140,7 @@ void gpio_cleanup(void) {
     gpiod_line_release(ser);
     gpiod_line_release(srclk);
     gpiod_line_release(rclk);
+    gpiod_line_release(srclk_clean);
     gpiod_chip_close(chip);
 }
 
@@ -121,10 +149,7 @@ int write_data_74HC595(int num) {
         printf("Invalid number: %d\n", num);
         return -1;
     }
-    for (int i = 0; i < 8; i++) {
-        if (num >> 1 & 0x01) {
-        }
-    }
+    shift_out(number[num]);
     return 0;
 }
 
@@ -132,27 +157,43 @@ unsigned char bcd_to_bin(unsigned char bcd) {
     return ((bcd >> 4) * 10) + (bcd & 0x0F);
 }
 
+static void dump_gpio_state(void) {
+    printf("GPIO state: SER=%d RCLK=%d SRCLK=%d SRCLR=%d\n",
+           gpiod_line_get_value(ser), gpiod_line_get_value(rclk),
+           gpiod_line_get_value(srclk), gpiod_line_get_value(srclk_clean));
+}
+
 int main() {
     printf("NIXIETUBE\n");
-    int fd_ds3231 = open_device("/dev/ds3231");
-    unsigned char time_buf[3];
-    struct pollfd pfds[2] = {{.fd = fd_ds3231, .events = POLLIN}};
+    // int fd_ds3231 = open_device("/dev/ds3231");
+    // unsigned char time_buf[3];
+    // struct pollfd pfds[2] = {{.fd = fd_ds3231, .events = POLLIN}};
     if (gpio_init() < 0) {
         printf("Failed to init GPIO\n");
-        close_device(fd_ds3231);
+        // close_device(fd_ds3231);
         return -1;
     }
-    ds3231_init(fd_ds3231);
-    shift_out(0x01);
-    while (1) {
+    // ds3231_init(fd_ds3231);
+    /*while (1) {
         poll(pfds, 1, -1);
         if (pfds[0].revents & POLLIN) {
             read(fd_ds3231, time_buf, 3);
-            printf("Current time: %d:%d:%d\n", time_buf[2], time_buf[1],
-                   time_buf[0]);
+            printf("Current time: %02d:%02d:%02d     ", time_buf[2],
+                   time_buf[1], time_buf[0]);
+            shift_out(time_buf[0] % 10); // 秒
         }
-    }
-    close_device(fd_ds3231);
+    }*/
+    while (1) {
+        for (int i = 0; i < 10; i++) {
+            dump_gpio_state();
+            /* 输出 01010100：Q7..Q0 = 0,1,0,1,0,1,0,1 */
+            shift_out(number[i]);
+            /* 输出后时钟/锁存脚应回到低电平 */
+            dump_gpio_state();
+            sleep(1);
+        }
+    };
+    // close_device(fd_ds3231);
     gpio_cleanup();
     return 0;
 }
